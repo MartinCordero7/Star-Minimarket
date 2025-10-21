@@ -1,5 +1,6 @@
 let adminProducts = JSON.parse(localStorage.getItem('adminProducts')) || [];
 let adminPromotions = JSON.parse(localStorage.getItem('adminPromotions')) || [];
+let adminEmployees = JSON.parse(localStorage.getItem('adminEmployees')) || [];
 
 if (adminProducts.length === 0) {
     adminProducts = [
@@ -95,6 +96,15 @@ if (adminPromotions.length === 0) {
     localStorage.setItem('adminPromotions', JSON.stringify(adminPromotions));
 }
 
+if (adminEmployees.length === 0) {
+    adminEmployees = [
+        { id: 1, name: 'Juan Pérez', role: 'Cajero', email: 'juan.perez@starminimarket.com', phone: '+593 099111222', status: 'Activo' },
+        { id: 2, name: 'María López', role: 'Vendedor', email: 'maria.lopez@starminimarket.com', phone: '+593 098333444', status: 'Activo' },
+        { id: 3, name: 'Carlos Ruiz', role: 'Bodeguero', email: 'carlos.ruiz@starminimarket.com', phone: '+593 097555666', status: 'Inactivo' }
+    ];
+    localStorage.setItem('adminEmployees', JSON.stringify(adminEmployees));
+}
+
 const productModal = document.getElementById('product-modal');
 const closeProductModal = document.getElementById('close-product-modal');
 const addProductBtn = document.getElementById('add-product-btn');
@@ -109,28 +119,30 @@ const promotionsTbody = document.getElementById('promotions-tbody');
 
 const adminLogoutLink = document.getElementById('admin-logout-link');
 const tabButtons = document.querySelectorAll('.tab-btn');
+const employeesTbody = document.getElementById('employees-tbody');
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAdminAuth();
     adminProducts = JSON.parse(localStorage.getItem('adminProducts')) || adminProducts;
     adminPromotions = JSON.parse(localStorage.getItem('adminPromotions')) || adminPromotions;
+    adminEmployees = JSON.parse(localStorage.getItem('adminEmployees')) || adminEmployees;
     loadAdminProducts();
     loadAdminPromotions();
+    loadAdminEmployees();
     updateStats();
     setupTabs();
 });
 
 function setupTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const tabName = button.getAttribute('data-tab');
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            const tab = document.getElementById(`${tabName}-tab`);
+            if (tab) tab.classList.add('active');
         });
     });
 }
@@ -270,6 +282,23 @@ function loadAdminPromotions() {
             </td>
         `;
         promotionsTbody.appendChild(row);
+    });
+}
+
+function loadAdminEmployees() {
+    if (!employeesTbody) return;
+    employeesTbody.innerHTML = '';
+    adminEmployees.forEach(emp => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${emp.id}</td>
+            <td>${emp.name}</td>
+            <td>${emp.role}</td>
+            <td>${emp.email}</td>
+            <td>${emp.phone}</td>
+            <td>${emp.status}</td>
+        `;
+        employeesTbody.appendChild(tr);
     });
 }
 

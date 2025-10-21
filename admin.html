@@ -48,6 +48,7 @@
             <div class="admin-tabs">
                 <button class="tab-btn active" data-tab="products">Productos</button>
                 <button class="tab-btn" data-tab="promotions">Promociones</button>
+                <button class="tab-btn" data-tab="employees">Empleados</button>
             </div>
 
             <div id="products-tab" class="tab-content active">
@@ -59,7 +60,7 @@
 
                 <div class="products-table">
                     <h3>Gestión de Productos</h3>
-                    <table id="admin-products-table">
+                    <table id="admin-products-table" class="admin-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -86,7 +87,7 @@
 
                 <div class="products-table">
                     <h3>Gestión de Promociones</h3>
-                    <table id="admin-promotions-table">
+                    <table id="admin-promotions-table" class="admin-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -101,6 +102,26 @@
                         </thead>
                         <tbody id="promotions-tbody">
                         </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- NUEVA SECCIÓN: Empleados -->
+            <div id="employees-tab" class="tab-content">
+                <div class="products-table">
+                    <h3>Lista de Empleados</h3>
+                    <table id="admin-employees-table" class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Cargo</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employees-tbody"></tbody>
                     </table>
                 </div>
             </div>
