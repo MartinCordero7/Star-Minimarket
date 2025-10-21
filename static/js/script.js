@@ -1,4 +1,45 @@
-const products = [
+const coupons = {
+    'DESCUENTO10': 0.10,
+    'VERANO20': 0.20,
+    'PRIMERACOMPRA': 0.15
+};
+
+const productsGrid = document.querySelector('.products-grid');
+const filterButtons = document.querySelectorAll('.filter-btn');
+const cartIcon = document.querySelector('.cart-icon');
+const shoppingCart = document.querySelector('.shopping-cart');
+const cartItems = document.querySelector('.cart-items');
+const cartCount = document.querySelector('.cart-count');
+const cartTotalPrice = document.getElementById('cart-total-price');
+const cartSubtotalPrice = document.getElementById('cart-subtotal-price');
+const cartIvaPrice = document.getElementById('cart-iva-price');
+const cartDiscountPrice = document.getElementById('cart-discount-price');
+const checkoutBtn = document.getElementById('checkout-btn');
+const clearCartBtn = document.getElementById('clear-cart');
+const contactForm = document.getElementById('contact-form');
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+const couponInput = document.getElementById('coupon-input');
+const applyCouponBtn = document.getElementById('apply-coupon-btn');
+const wishlistLink = document.getElementById('wishlist-link');
+const wishlistPanel = document.getElementById('wishlist-panel');
+const closeWishlist = document.getElementById('close-wishlist');
+const compareBtn = document.getElementById('compare-btn');
+const compareCount = document.getElementById('compare-count');
+const compareModal = document.getElementById('compare-modal');
+const closeCompare = document.getElementById('close-compare');
+const clearCompareBtn = document.getElementById('clear-compare');
+const viewHistoryBtn = document.getElementById('view-history-btn');
+const historyPanel = document.getElementById('purchase-history-panel');
+const closeHistory = document.getElementById('close-history');
+
+let cart = [];
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+let compareList = [];
+let purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory')) || [];
+let appliedCoupon = null;
+
+let products = JSON.parse(localStorage.getItem('adminProducts')) || [
     {
         id: 1,
         name: 'Leche Deslactosada',
@@ -65,52 +106,46 @@ const products = [
     }
 ];
 
-const coupons = {
-    'DESCUENTO10': 0.10,
-    'VERANO20': 0.20,
-    'PRIMERACOMPRA': 0.15
-};
-
-const productsGrid = document.querySelector('.products-grid');
-const filterButtons = document.querySelectorAll('.filter-btn');
-const cartIcon = document.querySelector('.cart-icon');
-const shoppingCart = document.querySelector('.shopping-cart');
-const cartItems = document.querySelector('.cart-items');
-const cartCount = document.querySelector('.cart-count');
-const cartTotalPrice = document.getElementById('cart-total-price');
-const cartSubtotalPrice = document.getElementById('cart-subtotal-price');
-const cartIvaPrice = document.getElementById('cart-iva-price');
-const cartDiscountPrice = document.getElementById('cart-discount-price');
-const checkoutBtn = document.getElementById('checkout-btn');
-const clearCartBtn = document.getElementById('clear-cart');
-const contactForm = document.getElementById('contact-form');
-const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
-const couponInput = document.getElementById('coupon-input');
-const applyCouponBtn = document.getElementById('apply-coupon-btn');
-const wishlistLink = document.getElementById('wishlist-link');
-const wishlistPanel = document.getElementById('wishlist-panel');
-const closeWishlist = document.getElementById('close-wishlist');
-const compareBtn = document.getElementById('compare-btn');
-const compareCount = document.getElementById('compare-count');
-const compareModal = document.getElementById('compare-modal');
-const closeCompare = document.getElementById('close-compare');
-const clearCompareBtn = document.getElementById('clear-compare');
-const viewHistoryBtn = document.getElementById('view-history-btn');
-const historyPanel = document.getElementById('purchase-history-panel');
-const closeHistory = document.getElementById('close-history');
-
-let cart = [];
-let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-let compareList = [];
-let purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory')) || [];
-let appliedCoupon = null;
-
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts('todos');
+    loadPromotions();
     setupEventListeners();
     updateWishlistCount();
 });
+
+function loadPromotions() {
+    const promotions = JSON.parse(localStorage.getItem('adminPromotions')) || [];
+    const offersContainer = document.querySelector('.offers-container');
+    
+    if (offersContainer && promotions.length > 0) {
+        offersContainer.innerHTML = '';
+        
+        promotions.forEach(promo => {
+            const offerCard = document.createElement('div');
+            offerCard.className = 'offer-card';
+            offerCard.innerHTML = `
+                <div class="offer-badge">-${promo.discount}%</div>
+                <img src="${promo.img}" alt="${promo.name}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="offer-content">
+                    <h3>${promo.name}</h3>
+                    <p class="price"><span class="original">$${promo.originalPrice.toFixed(2)}</span> $${promo.price.toFixed(2)}</p>
+                    <button class="add-to-cart-btn" 
+                            data-id="${promo.id}" 
+                            data-name="${promo.name}" 
+                            data-price="${promo.price}"
+                            data-img="${promo.img}" 
+                            data-category="${promo.category}"
+                            data-stock="999">
+                        Añadir al Carrito
+                    </button>
+                </div>
+            `;
+            offersContainer.appendChild(offerCard);
+            
+            offerCard.querySelector('.add-to-cart-btn').addEventListener('click', addToCart);
+        });
+    }
+}
 
 function setupEventListeners() {
     filterButtons.forEach(button => {
@@ -138,6 +173,15 @@ function setupEventListeners() {
 
     checkoutBtn.addEventListener('click', () => {
         if (cart.length > 0) {
+            cart.forEach(cartItem => {
+                const product = products.find(p => p.id === cartItem.id);
+                if (product) {
+                    product.stock -= cartItem.quantity;
+                }
+            });
+            
+            localStorage.setItem('adminProducts', JSON.stringify(products));
+            
             const purchase = {
                 date: new Date().toLocaleString(),
                 items: [...cart],
@@ -146,9 +190,12 @@ function setupEventListeners() {
             };
             purchaseHistory.push(purchase);
             localStorage.setItem('purchaseHistory', JSON.stringify(purchaseHistory));
+            
             alert('¡Gracias por tu compra! Total: ' + cartTotalPrice.textContent);
             clearCart();
             appliedCoupon = null;
+            
+            loadProducts('todos');
         } else {
             alert('Tu carrito está vacío');
         }

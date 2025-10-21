@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Star Minimarket</title>
+    <link rel="stylesheet" href="./static/css/styles.css">
+    <link rel="stylesheet" href="./static/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Star Minimarket - Admin</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Ver Tienda</a></li>
+                    <li><a href="#" id="admin-logout-link">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="admin-section">
+        <div class="container">
+            <h2>Panel de Administración</h2>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <i class="fas fa-box"></i>
+                    <h3>Total Productos</h3>
+                    <p id="total-products">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Total Ventas</h3>
+                    <p id="total-sales">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Ingresos</h3>
+                    <p id="total-revenue">$0.00</p>
+                </div>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="products">Productos</button>
+                <button class="tab-btn" data-tab="promotions">Promociones</button>
+            </div>
+
+            <div id="products-tab" class="tab-content active">
+                <div class="admin-controls">
+                    <button id="add-product-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </button>
+                </div>
+
+                <div class="products-table">
+                    <h3>Gestión de Productos</h3>
+                    <table id="admin-products-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Categoría</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="promotions-tab" class="tab-content">
+                <div class="admin-controls">
+                    <button id="add-promotion-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Agregar Promoción
+                    </button>
+                </div>
+
+                <div class="products-table">
+                    <h3>Gestión de Promociones</h3>
+                    <table id="admin-promotions-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Precio Original</th>
+                                <th>Precio Oferta</th>
+                                <th>Descuento</th>
+                                <th>Categoría</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promotions-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-product-modal">×</span>
+            <h2 id="modal-title">Agregar Producto</h2>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label for="product-name">Nombre del Producto</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Precio ($)</label>
+                    <input type="number" id="product-price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-category">Categoría</label>
+                    <select id="product-category" required>
+                        <option value="alimentos">Alimentos</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="limpieza">Limpieza</option>
+                        <option value="personal">Cuidado Personal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Stock</label>
+                    <input type="number" id="product-stock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-img">URL de Imagen</label>
+                    <input type="text" id="product-img" placeholder="static/images/producto.jpg" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Producto</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="promotion-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-promotion-modal">×</span>
+            <h2 id="promotion-modal-title">Agregar Promoción</h2>
+            <form id="promotion-form">
+                <input type="hidden" id="promotion-id">
+                <div class="form-group">
+                    <label for="promotion-name">Nombre de la Promoción</label>
+                    <input type="text" id="promotion-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="promotion-original-price">Precio Original ($)</label>
+                    <input type="number" id="promotion-original-price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="promotion-price">Precio en Oferta ($)</label>
+                    <input type="number" id="promotion-price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="promotion-category">Categoría</label>
+                    <select id="promotion-category" required>
+                        <option value="alimentos">Alimentos</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="limpieza">Limpieza</option>
+                        <option value="personal">Cuidado Personal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="promotion-img">URL de Imagen</label>
+                    <input type="text" id="promotion-img" placeholder="static/images/promocion.jpg" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Promoción</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Star Minimarket - Panel de Administración</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./static/js/admin.js"></script>
+</body>
+</html>

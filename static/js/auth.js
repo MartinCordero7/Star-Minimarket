@@ -3,6 +3,11 @@ const validUser = {
     password: "123"
 };
 
+const adminUser = {
+    username: "Admin",
+    password: "admin123"
+};
+
 function checkLoggedIn() {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn');
     const loggedInUser = sessionStorage.getItem('loggedInUser');
@@ -51,7 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorElement = document.getElementById('login-error');
-            if (username === validUser.username && password === validUser.password) {
+            
+            if (username === adminUser.username && password === adminUser.password) {
+                sessionStorage.setItem('isAdmin', 'true');
+                sessionStorage.setItem('adminUser', username);
+                alert('¡Inicio de sesión como administrador exitoso!');
+                window.location.href = 'admin.html';
+            } else if (username === validUser.username && password === validUser.password) {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('loggedInUser', username);
                 alert('¡Inicio de sesión exitoso!');
